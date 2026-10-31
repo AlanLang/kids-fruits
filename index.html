@@ -1,6 +1,6 @@
 <title>水果碰碰乐</title>
 <meta charset="UTF-8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='.9em' font-size='56'%3E🍎%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 28C15 6 3 43 18 76Q29 97 50 85Q75 99 85 66C99 28 73 15 50 28' fill='%23f36a5f'/%3E%3Cpath d='M50 26Q50 8 70 10Q70 25 50 26' fill='%2383b98a'/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
 /* A little orchard: open sky, a wooden sign, and oversized fruit tiles on a picnic blanket. */
@@ -18,7 +18,7 @@
 .game .board{display:block;position:relative;overflow:visible}
 .game .board .fruit{position:absolute;border-radius:20%;box-shadow:0 5px 0 var(--soft),0 8px 12px var(--shadow);transition:transform .16s,background .16s}
 .game .fruit.covered{background:var(--soft);border-color:var(--green);border-bottom-width:5px;color:var(--green);box-shadow:0 5px 0 var(--green)}
-.game .fruit .emoji{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:var(--picture-size,64px);line-height:1;pointer-events:none}
+.reward svg{display:block;width:100px;height:100px}
 .tile-back{font-size:34px;opacity:.45;pointer-events:none}
 .connections{z-index:10}.spark{z-index:11}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.fruit.vanish{opacity:0}}
@@ -43,7 +43,8 @@
 <p id="feedback" class="feedback" role="status" aria-live="polite">找找看，谁和谁一样？</p>
 <nav class="tools" aria-label="游戏工具"><button id="hint" class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6M10 22h4M8 14a7 7 0 1 1 8 0l-1 2H9z"/></svg>帮帮我</button><button id="restart" class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 8M4 3v7h7"/></svg>再玩一次</button></nav>
 </main>
-<div id="win" class="overlay" hidden><section class="celebration" role="dialog" aria-modal="true" aria-labelledby="win-title"><div class="reward" aria-hidden="true">🌈</div><h2 id="win-title">你真棒！</h2><p id="win-text">水果都找到好朋友啦！</p><button id="next" class="primary">下一关 →</button><button id="easy" class="secondary">再玩简单一点的</button></section></div>
+<div id="win" class="overlay" hidden><section class="celebration" role="dialog" aria-modal="true" aria-labelledby="win-title"><div class="reward" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#rainbow"/></svg></div><h2 id="win-title">你真棒！</h2><p id="win-text">水果都找到好朋友啦！</p><button id="next" class="primary">下一关 →</button><button id="easy" class="secondary">再玩简单一点的</button></section></div>
+<script src="illustrations.js"></script>
 <script src="game.js"></script>
 <script>
 (() => {
@@ -60,7 +61,7 @@ function refreshTiles(){
     button.disabled=tile.removed||covered;
     button.classList.toggle('covered',covered);
     button.setAttribute('aria-label',covered?'被盖住的图案':`${tile.fruit.name}，第 ${tile.id+1} 张`);
-    button.querySelector('.picture').hidden=covered;
+    button.querySelector('.picture').toggleAttribute('hidden',covered);
     button.querySelector('.tile-back').hidden=!covered;
   });
 }
@@ -75,7 +76,6 @@ function resizeBoard(){
     const button=tileButtons.get(tile.id);
     button.style.left=`${left+x*size}px`;button.style.top=`${top+y*size}px`;
     button.style.width=`${size}px`;button.style.height=`${size}px`;
-    button.style.setProperty('--picture-size',`${size*.76}px`);
   });
 }
 new ResizeObserver(resizeBoard).observe(board);
@@ -115,7 +115,7 @@ function start(n=level){
     button.id=`fruit-${round}-${tile.id}`;button.className='fruit';button.dataset.tile=tile.id;
     button.dataset.fruit=f.id;button.dataset.name=f.name;button.style.zIndex=tile.z+1;
     button.setAttribute('aria-pressed','false');
-    button.innerHTML=(f.emoji?`<span class="picture emoji" aria-hidden="true">${f.emoji}</span>`:`<svg class="picture" viewBox="0 0 100 100" aria-hidden="true"><use href="#${f.id}"/></svg>`)+`<span class="tile-back" aria-hidden="true">✿</span>`;
+    button.innerHTML=`<svg class="picture" viewBox="0 0 100 100" aria-hidden="true"><use href="#${f.id}"/></svg><span class="tile-back" aria-hidden="true">✿</span>`;
     button.addEventListener('click',()=>choose(button));tileButtons.set(tile.id,button);board.append(button);
   });
   refreshTiles();resizeBoard();idle();
